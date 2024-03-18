@@ -5,7 +5,11 @@ import {
 } from "firebase/auth";
 import { appDb } from "../../service/fireB";
 
-const createUser = (email: string, password: string) => {
+const createUser = (
+  email: string,
+  password: string,
+  setToken: (token: string) => void
+) => {
   const auth = getAuth(appDb);
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
@@ -13,7 +17,7 @@ const createUser = (email: string, password: string) => {
       user
         .getIdToken()
         .then((accessToken) => {
-          console.log(accessToken, "token");
+          setToken(accessToken);
         })
         .catch((error) => {
           console.error("Error getting access token:", error);
@@ -28,13 +32,24 @@ const createUser = (email: string, password: string) => {
     });
 };
 
-const logIn = (password: string, email: string) => {
+const logIn = (
+  password: string,
+  email: string,
+  setToken: (token: string) => void
+) => {
   const auth = getAuth(appDb);
   signInWithEmailAndPassword(auth, email, password)
     .then((resp: { user: any }) => {
       // Signed in
       const user = resp.user;
-      console.log(user, "Log in");
+      user
+        .getIdToken()
+        .then((accessToken: string) => {
+          setToken(accessToken);
+        })
+        .catch((error: any) => {
+          console.error("Error getting access token:", error);
+        });
     })
     .catch((error: { code: any; message: any }) => {
       const errorCode = error.code;
