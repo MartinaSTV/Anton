@@ -1,9 +1,19 @@
-import { createUser } from "./LogInService";
+import { useRecoilState } from "recoil";
+import { createUser } from "../LogInService";
 import { useState } from "react";
+import Token from "../../../atoms/Token";
+import { useNavigate } from "react-router-dom";
 
-const LogIn = () => {
+const CreateAccount = () => {
   const [username, setUsername] = useState("");
   const [password, setPasword] = useState("");
+  const [, setToken] = useRecoilState(Token);
+  const navigate = useNavigate();
+
+  const handelOnCreateAccont = () => {
+    createUser(username, password, setToken);
+    navigate("/Journal");
+  };
 
   return (
     <section>
@@ -36,16 +46,11 @@ const LogIn = () => {
             id="password"
           />
         </div>
-        <button
-          type="submit"
-          onClick={() => {
-            createUser(username, password);
-          }}
-        >
-          Logga in
+        <button type="submit" onClick={handelOnCreateAccont}>
+          Skapa Konto
         </button>
       </form>
     </section>
   );
 };
-export default LogIn;
+export default CreateAccount;
